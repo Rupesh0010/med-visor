@@ -40,11 +40,11 @@ const Index = () => {
   };
 
   const recentClaimsColumns = [
-    { key: 'claimId', label: 'Claim ID' },
+    { key: 'claim_id', label: 'Claim ID' },
     { key: 'patientName', label: 'Patient' },
     { key: 'dateOfService', label: 'Date of Service' },
     { 
-      key: 'amount', 
+      key: 'billedamount', 
       label: 'Amount',
       render: (value: number) => `$${value.toLocaleString()}`
     },
@@ -54,11 +54,11 @@ const Index = () => {
   ];
 
   const unpaidClaimsColumns = [
-    { key: 'claimId', label: 'Claim ID' },
+    { key: 'claim_id', label: 'Claim ID' },
     { key: 'patientName', label: 'Patient' },
     { key: 'dateOfService', label: 'Date of Service' },
     { 
-      key: 'amount', 
+      key: 'billedamount', 
       label: 'Amount',
       render: (value: number) => `$${value.toLocaleString()}`
     },
