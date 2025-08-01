@@ -46,7 +46,7 @@ const Index = () => {
     { 
       key: 'billedamount', 
       label: 'Amount',
-      render: (value: number) => `$${value.toLocaleString()}`
+      render: (value: number) => value != null ? `$${value.toLocaleString()}` : '$0'
     },
     { key: 'payer', label: 'Payer' },
     { key: 'status', label: 'Status' },
@@ -60,16 +60,18 @@ const Index = () => {
     { 
       key: 'billedamount', 
       label: 'Amount',
-      render: (value: number) => `$${value.toLocaleString()}`
+      render: (value: number) => value != null ? `$${value.toLocaleString()}` : '$0'
     },
     { key: 'payer', label: 'Payer' },
     { 
       key: 'daysOutstanding', 
       label: 'Days Outstanding',
-      render: (value: number) => (
+      render: (value: number) => value != null ? (
         <span className={value > 90 ? 'text-destructive font-medium' : 'text-warning'}>
           {value} days
         </span>
+      ) : (
+        <span>0 days</span>
       )
     },
     { key: 'provider', label: 'Provider' }
