@@ -29,46 +29,46 @@ export const mockDenialReasonsData = [
 
 export const mockRecentClaims = [
   {
-    claimId: 'CLM-2024-001',
+    claim_id: 'CLM-2024-001',
     patientName: 'John Smith',
     dateOfService: '2024-01-15',
-    amount: 2450.00,
+    billedamount: 2450.00,
     payer: 'Blue Cross',
     status: 'Paid',
     provider: 'Dr. Johnson'
   },
   {
-    claimId: 'CLM-2024-002',
+    claim_id: 'CLM-2024-002',
     patientName: 'Mary Wilson',
     dateOfService: '2024-01-14',
-    amount: 1850.00,
+    billedamount: 1850.00,
     payer: 'Aetna',
     status: 'Denied',
     provider: 'Dr. Smith'
   },
   {
-    claimId: 'CLM-2024-003',
+    claim_id: 'CLM-2024-003',
     patientName: 'Robert Davis',
     dateOfService: '2024-01-13',
-    amount: 3200.00,
+    billedamount: 3200.00,
     payer: 'Medicare',
     status: 'Pending',
     provider: 'Dr. Johnson'
   },
   {
-    claimId: 'CLM-2024-004',
+    claim_id: 'CLM-2024-004',
     patientName: 'Lisa Brown',
     dateOfService: '2024-01-12',
-    amount: 1650.00,
+    billedamount: 1650.00,
     payer: 'Cigna',
     status: 'Submitted',
     provider: 'Dr. Williams'
   },
   {
-    claimId: 'CLM-2024-005',
+    claim_id: 'CLM-2024-005',
     patientName: 'David Miller',
     dateOfService: '2024-01-11',
-    amount: 2900.00,
+    billedamount: 2900.00,
     payer: 'United Health',
     status: 'Paid',
     provider: 'Dr. Smith'
@@ -77,28 +77,28 @@ export const mockRecentClaims = [
 
 export const mockUnpaidClaims = [
   {
-    claimId: 'CLM-2023-156',
+    claim_id: 'CLM-2023-156',
     patientName: 'Sarah Johnson',
     dateOfService: '2023-11-20',
-    amount: 4200.00,
+    billedamount: 4200.00,
     payer: 'Blue Cross',
     daysOutstanding: 95,
     provider: 'Dr. Wilson'
   },
   {
-    claimId: 'CLM-2023-142',
+    claim_id: 'CLM-2023-142',
     patientName: 'Michael Chen',
     dateOfService: '2023-11-15',
-    amount: 3800.00,
+    billedamount: 3800.00,
     payer: 'Aetna',
     daysOutstanding: 87,
     provider: 'Dr. Johnson'
   },
   {
-    claimId: 'CLM-2023-134',
+    claim_id: 'CLM-2023-134',
     patientName: 'Emily Davis',
     dateOfService: '2023-11-10',
-    amount: 2100.00,
+    billedamount: 2100.00,
     payer: 'Medicare',
     daysOutstanding: 78,
     provider: 'Dr. Smith'
