@@ -37,23 +37,88 @@ const Index = () => {
   const calculateKPIsFromData = (data: any[]) => {
     if (data.length === 0) return mockKPIData;
 
-    const totalClaims = data.length;
-    const paidClaims = data.filter(claim => claim.status === 'Paid');
-    const deniedClaims = data.filter(claim => claim.status === 'Denied');
-    const grossCharges = data.reduce((sum, claim) => sum + (parseFloat(claim.billedamount) || 0), 0);
+    // Get current date and 30 days ago
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
+
+    // Filter data for current period (last 30 days) and previous period (30-60 days ago)
+    const currentPeriodData = data.filter(claim => {
+      const claimDate = new Date(claim.dateOfService);
+      return claimDate >= thirtyDaysAgo && claimDate <= now;
+    });
+
+    const previousPeriodData = data.filter(claim => {
+      const claimDate = new Date(claim.dateOfService);
+      return claimDate >= sixtyDaysAgo && claimDate < thirtyDaysAgo;
+    });
+
+    // Calculate metrics for current period
+    const totalClaims = currentPeriodData.length;
+    const paidClaims = currentPeriodData.filter(claim => claim.status === 'Paid');
+    const deniedClaims = currentPeriodData.filter(claim => claim.status === 'Denied');
+    const grossCharges = currentPeriodData.reduce((sum, claim) => sum + (parseFloat(claim.billedamount) || 0), 0);
     const paymentsReceived = paidClaims.reduce((sum, claim) => sum + (parseFloat(claim.billedamount) || 0), 0);
     const unpaidClaims = data.filter(claim => claim.daysOutstanding && claim.daysOutstanding > 0);
     const avgARDays = unpaidClaims.length > 0 ? 
       unpaidClaims.reduce((sum, claim) => sum + (parseInt(claim.daysOutstanding) || 0), 0) / unpaidClaims.length : 0;
 
+    // Calculate metrics for previous period
+    const prevTotalClaims = previousPeriodData.length;
+    const prevPaidClaims = previousPeriodData.filter(claim => claim.status === 'Paid');
+    const prevDeniedClaims = previousPeriodData.filter(claim => claim.status === 'Denied');
+    const prevGrossCharges = previousPeriodData.reduce((sum, claim) => sum + (parseFloat(claim.billedamount) || 0), 0);
+    const prevPaymentsReceived = prevPaidClaims.reduce((sum, claim) => sum + (parseFloat(claim.billedamount) || 0), 0);
+
+    // Helper function to calculate percentage change
+    const calculateChange = (current: number, previous: number) => {
+      if (previous === 0) return { value: 0, type: 'increase' as const };
+      const change = ((current - previous) / previous) * 100;
+      return {
+        value: Math.round(Math.abs(change) * 10) / 10,
+        type: change >= 0 ? 'increase' as const : 'decrease' as const
+      };
+    };
+
+    // Calculate current values
+    const currentNCR = grossCharges > 0 ? (paymentsReceived / grossCharges) * 100 : 0;
+    const currentDenialRate = totalClaims > 0 ? (deniedClaims.length / totalClaims) * 100 : 0;
+    const currentFirstPassRate = totalClaims > 0 ? (paidClaims.length / totalClaims) * 100 : 0;
+
+    // Calculate previous values
+    const prevNCR = prevGrossCharges > 0 ? (prevPaymentsReceived / prevGrossCharges) * 100 : 0;
+    const prevDenialRate = prevTotalClaims > 0 ? (prevDeniedClaims.length / prevTotalClaims) * 100 : 0;
+    const prevFirstPassRate = prevTotalClaims > 0 ? (prevPaidClaims.length / prevTotalClaims) * 100 : 0;
+
     return {
-      ncr: { value: grossCharges > 0 ? Math.round((paymentsReceived / grossCharges) * 100 * 10) / 10 : 0, change: { value: 2.3, type: 'increase' as const } },
-      denialRate: { value: totalClaims > 0 ? Math.round((deniedClaims.length / totalClaims) * 100 * 10) / 10 : 0, change: { value: 1.2, type: 'decrease' as const } },
-      grossCharges: { value: Math.round(grossCharges), change: { value: 5.8, type: 'increase' as const } },
-      paymentsReceived: { value: Math.round(paymentsReceived), change: { value: 3.4, type: 'increase' as const } },
-      firstPassRate: { value: totalClaims > 0 ? Math.round((paidClaims.length / totalClaims) * 100 * 10) / 10 : 0, change: { value: 4.1, type: 'increase' as const } },
-      arDays: { value: Math.round(avgARDays), change: { value: 2.1, type: 'decrease' as const } },
-      totalClaims: { value: totalClaims, change: { value: 8.9, type: 'increase' as const } }
+      ncr: { 
+        value: Math.round(currentNCR * 10) / 10, 
+        change: calculateChange(currentNCR, prevNCR)
+      },
+      denialRate: { 
+        value: Math.round(currentDenialRate * 10) / 10, 
+        change: calculateChange(currentDenialRate, prevDenialRate)
+      },
+      grossCharges: { 
+        value: Math.round(grossCharges), 
+        change: calculateChange(grossCharges, prevGrossCharges)
+      },
+      paymentsReceived: { 
+        value: Math.round(paymentsReceived), 
+        change: calculateChange(paymentsReceived, prevPaymentsReceived)
+      },
+      firstPassRate: { 
+        value: Math.round(currentFirstPassRate * 10) / 10, 
+        change: calculateChange(currentFirstPassRate, prevFirstPassRate)
+      },
+      arDays: { 
+        value: Math.round(avgARDays), 
+        change: { value: 0, type: 'increase' as const } // A/R days need historical data to calculate properly
+      },
+      totalClaims: { 
+        value: totalClaims, 
+        change: calculateChange(totalClaims, prevTotalClaims)
+      }
     };
   };
 
