@@ -35,9 +35,14 @@ const Index = () => {
   const [showUploader, setShowUploader] = useState(false);
 
   const handleDataUpload = (data: any[], headers: string[]) => {
+    console.log('Uploaded data:', data);
+    console.log('Headers:', headers);
     setUploadedData(data);
     setShowUploader(false);
   };
+
+  // Use uploaded data if available, otherwise use mock data
+  const recentClaimsData = uploadedData.length > 0 ? uploadedData : mockRecentClaims;
 
   const recentClaimsColumns = [
     { key: 'claim_id', label: 'Claim ID' },
@@ -124,7 +129,7 @@ const Index = () => {
               </div>
               <CSVUploader
                 onDataParsed={handleDataUpload}
-                expectedHeaders={['Claim ID', 'Patient Name', 'Amount', 'Status']}
+                expectedHeaders={['claim_id', 'patientName', 'billedamount', 'status', 'payer', 'provider', 'dateOfService']}
               />
             </div>
           </div>
@@ -216,7 +221,7 @@ const Index = () => {
           <div className="lg:col-span-2">
             <DataTable
               title="Recent Claims"
-              data={uploadedData.length > 0 ? uploadedData : mockRecentClaims}
+              data={recentClaimsData}
               columns={recentClaimsColumns}
             />
           </div>
@@ -226,7 +231,7 @@ const Index = () => {
         <div className="mb-8">
           <DataTable
             title="Unpaid Claims > 60 Days"
-            data={mockUnpaidClaims}
+            data={uploadedData.length > 0 ? uploadedData.filter((claim: any) => claim.daysOutstanding > 60) : mockUnpaidClaims}
             columns={unpaidClaimsColumns}
           />
         </div>
